@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{{ candidate.name }} - Candidate Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>👤 {{ candidate.name }}</h5>
+                <div>
+                    <span class="badge bg-{{ 'warning' if candidate.status == 'pending_review' else 'success' }}">
+                        {{ candidate.status.replace('_', ' ').title() }}
+                    </span>
+                    {% if candidate.get('shortlisted') == 'yes' or candidate.status == 'interview_scheduled' %}
+                    <span class="badge bg-success ms-1">⭐ Shortlisted</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Email:</strong> {{ candidate.email or 'Not provided' }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Phone:</strong> {{ candidate.phone or 'Not provided' }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Match Score:</strong>
+                        <div class="progress mt-1">
+                            <div class="progress-bar" role="progressbar" style="width: {{ candidate.match_score }}%">
+                                {{ "%.1f"|format(candidate.match_score) }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Applied Date:</strong> {{ candidate.created_at[:10] }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>🤖 AI Analysis:</strong>
+                    <div class="border p-3 bg-light mt-2">
+                        {% if candidate.ai_analysis %}
+                            <pre class="mb-0">{{ candidate.ai_analysis }}</pre>
+                        {% else %}
+                            <p class="text-muted mb-0">No AI analysis available</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>📝 Notes:</strong>
+                    <div class="border p-3 bg-light mt-2" style="min-height: 100px;">
+                        {% if candidate.notes %}
+                            <pre class="mb-0 small">{{ candidate.notes }}</pre>
+                        {% else %}
+                            <p class="text-muted mb-0">No notes added yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Add Note Form -->
+                <div class="mb-3">
+                    <form method="POST" action="{{ url_for('add_note', candidate_id=candidate.id) }}">
+                        <div class="input-group">
+                            <textarea class="form-control" name="note" placeholder="Add a note about this candidate..." rows="2" required></textarea>
+                            <button class="btn btn-outline-secondary" type="submit">📝 Add Note</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    {% if candidate.status == 'pending_review' %}
+                    <a href="{{ url_for('shortlist_candidate', candidate_id=candidate.id) }}" class="btn btn-success">✅ Shortlist</a>
+                    <a href="{{ url_for('schedule_interview', candidate_id=candidate.id) }}" class="btn btn-warning">📞 Schedule Interview</a>
+                    <a href="{{ url_for('reject_candidate', candidate_id=candidate.id) }}" class="btn btn-danger">❌ Reject</a>
+                    {% elif candidate.status == 'shortlisted' %}
+                    <a href="{{ url_for('schedule_interview', candidate_id=candidate.id) }}" class="btn btn-warning">📞 Schedule Interview</a>
+                    <span class="btn btn-success disabled">✅ Shortlisted</span>
+                    {% elif candidate.status == 'rejected' %}
+                    <span class="btn btn-danger disabled">❌ Rejected</span>
+                    {% elif candidate.status == 'interview_scheduled' %}
+                    <span class="btn btn-warning disabled">📞 Interview Scheduled</span>
+                    {% endif %}
+                    <a href="{{ candidate.cv_path }}" class="btn btn-outline-primary" target="_blank">📄 View CV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>📊 Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">Match Score</small>
+                    <div class="h5 text-primary">{{ "%.1f"|format(candidate.match_score) }}%</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Status</small>
+                    <div class="h6">{{ candidate.status.replace('_', ' ').title() }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Applied</small>
+                    <div class="h6">{{ candidate.created_at[:10] }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Shortlisted</small>
+                    <div class="h6">{{ 'Yes' if (candidate.get('shortlisted') == 'yes' or candidate.status == 'interview_scheduled') else 'No' }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6>🎯 Actions</h6>
+            </div>
+            <div class="card-body">
+                {% if candidate.status == 'pending_review' %}
+                <a href="{{ url_for('shortlist_candidate', candidate_id=candidate.id) }}" class="btn btn-sm btn-success d-block w-100 mb-2">✅ Shortlist</a>
+                <a href="{{ url_for('schedule_interview', candidate_id=candidate.id) }}" class="btn btn-sm btn-warning d-block w-100 mb-2">📞 Schedule Interview</a>
+                <a href="{{ url_for('reject_candidate', candidate_id=candidate.id) }}" class="btn btn-sm btn-danger d-block w-100 mb-2">❌ Reject</a>
+                {% elif candidate.status == 'shortlisted' %}
+                <a href="{{ url_for('schedule_interview', candidate_id=candidate.id) }}" class="btn btn-sm btn-warning d-block w-100 mb-2">📞 Schedule Interview</a>
+                <span class="btn btn-sm btn-success d-block w-100 mb-2 disabled">✅ Shortlisted</span>
+                {% elif candidate.status == 'rejected' %}
+                <span class="btn btn-sm btn-danger d-block w-100 mb-2 disabled">❌ Rejected</span>
+                {% elif candidate.status == 'interview_scheduled' %}
+                <span class="btn btn-sm btn-warning d-block w-100 mb-2 disabled">📞 Interview Scheduled</span>
+                {% endif %}
+                <div class="mt-2">
+                    <small class="text-muted">Quick Note:</small>
+                    <form method="POST" action="{{ url_for('add_note', candidate_id=candidate.id) }}" class="mt-1">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" name="note" placeholder="Quick note...">
+                            <button class="btn btn-outline-secondary" type="submit">+</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ jd.role_title }} - Job Description{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>🎯 {{ jd.role_title }}</h5>
+                <span class="badge bg-{{ 'success' if jd.status == 'active' else 'secondary' }}">
+                    {{ jd.status.title() }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Department:</strong> {{ jd.department }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Seniority:</strong> {{ jd.seniority_level }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Auto-shortlist at:</strong> {{ jd.get('min_score', 70) }}%
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Required Skills:</strong>
+                    <p class="text-muted">{{ jd.required_skills }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Job Description:</strong>
+                    <div class="border p-3 bg-light">
+                        {{ jd.description | replace('\n', '<br>') | safe }}
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('upload_candidates', jd_id=jd.id) }}" class="btn btn-primary">
+                        📤 Upload CVs
+                    </a>
+                    {% if jd.status == 'draft' %}
+                    <a href="{{ url_for('activate_job', jd_id=jd.id) }}" class="btn btn-success">✅ Activate Job</a>
+                    {% else %}
+                    <span class="btn btn-success disabled">✅ Job Active</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>👥 Candidates ({{ candidates|length }})</h6>
+            </div>
+            <div class="card-body">
+                {% if candidates %}
+                    {% for candidate in candidates %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <strong>{{ candidate.name }}</strong>
+                        <div class="small text-muted">
+                            Match: {{ "%.1f"|format(candidate.match_score) }}%
+                        </div>
+                        <div class="small">
+                            Status: <span class="badge bg-{{ 'success' if candidate.status == 'shortlisted' else 'warning' }}">
+                                {{ candidate.status.replace('_', ' ').title() }}
+                            </span>
+                        </div>
+                        <a href="{{ url_for('view_candidate', candidate_id=candidate.id) }}" class="btn btn-sm btn-outline-primary mt-1">
+                            View Details
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No candidates uploaded yet.</p>
+                    <a href="{{ url_for('upload_candidates', jd_id=jd.id) }}" class="btn btn-sm btn-primary">
+                        Upload First CV
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

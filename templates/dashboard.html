@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}RAD Recruitment Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="display-4">🤖 RAD Recruitment Assistant</h1>
+        <p class="lead">AI-Powered Internal Recruitment Dashboard</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Active Jobs</h5>
+                <h2 class="card-text">{{ active_jobs }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Pending Review</h5>
+                <h2 class="card-text">{{ pending_candidates }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Shortlisted</h5>
+                <h2 class="card-text">-</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">In Process</h5>
+                <h2 class="card-text">-</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>🎯 Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('create_jd') }}" class="btn btn-primary mb-2 d-block">
+                    📝 Create New Job Description
+                </a>
+                <a href="{{ url_for('jobs_list') }}" class="btn btn-info mb-2 d-block">
+                    🎯 View All Jobs
+                </a>
+                <a href="{{ url_for('chatbot') }}" class="btn btn-success mb-2 d-block">
+                    💬 Chat with RAD Bot
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>📈 Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <small class="text-muted">2 hours ago</small>
+                        <p>New JD created for Senior Developer</p>
+                    </div>
+                    <div class="timeline-item">
+                        <small class="text-muted">5 hours ago</small>
+                        <p>3 CVs analyzed and shortlisted</p>
+                    </div>
+                    <div class="timeline-item">
+                        <small class="text-muted">1 day ago</small>
+                        <p>Interview scheduled for UI/UX Designer role</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

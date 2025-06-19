@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}All Jobs - RAD{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎯 All Job Postings</h2>
+    <a href="{{ url_for('create_jd') }}" class="btn btn-primary">+ Create New Job</a>
+</div>
+
+<div class="row">
+    {% for job in jobs %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ job.role_title }}</h5>
+                <span class="badge bg-{{ 'success' if job.status == 'active' else 'secondary' }}">
+                    {{ job.status.title() }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <strong>Department:</strong> {{ job.department }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Level:</strong> {{ job.seniority_level }}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <strong>Auto-shortlist:</strong> {{ job.get('min_score', 70) }}%
+                </div>
+                <div class="mb-3">
+                    <strong>Skills:</strong>
+                    <p class="text-muted small">{{ job.required_skills[:100] }}...</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('view_jd', jd_id=job.id) }}" class="btn btn-sm btn-primary">
+                        View Details
+                    </a>
+                    <a href="{{ url_for('upload_candidates', jd_id=job.id) }}" class="btn btn-sm btn-outline-primary">
+                        Upload CVs
+                    </a>
+                    {% if job.status == 'draft' %}
+                    <a href="{{ url_for('activate_job', jd_id=job.id) }}" class="btn btn-sm btn-success">
+                        Activate
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer text-muted small">
+                Created: {{ job.created_at[:10] }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not jobs %}
+<div class="text-center py-5">
+    <h4 class="text-muted">No jobs created yet</h4>
+    <p class="text-muted">Create your first job posting to start recruiting!</p>
+    <a href="{{ url_for('create_jd') }}" class="btn btn-primary">Create First Job</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}RAD Bot - AI Assistant{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🤖 RAD Bot - Your AI Recruitment Assistant</h5>
+                <small>Powered by OpenAI GPT-4 with real-time recruitment data</small>
+            </div>
+            <div class="card-body" style="height: 500px; overflow-y: auto;" id="chat-container">
+                <div class="chat-message bot-message">
+                    <strong>RAD Bot:</strong> Hi! I'm your AI recruitment assistant with access to all your recruitment data. I can help you with:
+                    <ul class="mt-2">
+                        <li>📊 Check candidate statistics and scores</li>
+                        <li>🎯 Review active job postings</li>
+                        <li>👥 Find top candidates for positions</li>
+                        <li>📈 Get recruitment insights and recommendations</li>
+                        <li>⏳ Track pending reviews and next actions</li>
+                    </ul>
+                    What would you like to know?
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="user-input" 
+                           placeholder="Ask me about your recruitment data..." maxlength="500">
+                    <button class="btn btn-primary" type="button" id="send-btn">
+                        <span id="send-text">Send</span>
+                        <span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <h6>💡 Quick Questions:</h6>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary quick-question" data-question="Show me all shortlisted candidates with details">
+                    📊 Shortlisted Candidates
+                </button>
+                <button class="btn btn-sm btn-outline-primary quick-question" data-question="List all active jobs with candidate count">
+                    🎯 Active Jobs
+                </button>
+                <button class="btn btn-sm btn-outline-primary quick-question" data-question="Who are the top 5 candidates by match score?">
+                    🏆 Top Candidates
+                </button>
+                <button class="btn btn-sm btn-outline-primary quick-question" data-question="Give me recruitment insights and recommendations">
+                    📈 Insights
+                </button>
+                <button class="btn btn-sm btn-outline-primary quick-question" data-question="What candidates need my attention? Show pending reviews">
+                    ⚠️ Action Items
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-message {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    max-width: 85%;
+}
+.bot-message {
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+.user-message {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+.quick-question {
+    margin-bottom: 5px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const sendText = document.getElementById('send-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    
+    function addMessage(message, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'}`;
+        messageDiv.innerHTML = `<strong>${isUser ? 'You' : 'RAD Bot'}:</strong> ${message.replace(/\n/g, '<br>')}`;
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    function showLoading(show) {
+        if (show) {
+            sendText.classList.add('d-none');
+            loadingSpinner.classList.remove('d-none');
+            sendBtn.disabled = true;
+        } else {
+            sendText.classList.remove('d-none');
+            loadingSpinner.classList.add('d-none');
+            sendBtn.disabled = false;
+        }
+    }
+    
+    function sendMessage(message = null) {
+        const messageText = message || userInput.value.trim();
+        if (!messageText) return;
+        
+        addMessage(messageText, true);
+        if (!message) userInput.value = '';
+        
+        showLoading(true);
+        
+        fetch('/api/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({message: messageText})
+        })
+        .then(response => response.json())
+        .then(data => {
+            showLoading(false);
+            addMessage(data.response);
+        })
+        .catch(error => {
+            showLoading(false);
+            addMessage('Sorry, I encountered an error. Please try again.');
+        });
+    }
+    
+    // Event listeners
+    sendBtn.addEventListener('click', () => sendMessage());
+    userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Quick question buttons
+    document.querySelectorAll('.quick-question').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const question = this.getAttribute('data-question');
+            sendMessage(question);
+        });
+    });
+});
+</script>
+{% endblock %}
