@@ -130,3 +130,43 @@ def calculate_match_score(cv_text: str, required_skills: str) -> float:
         return 0.0
         print(f"Error calculating match score: {str(e)}")
         return 0.0
+
+def calculate_ats_score(cv_text: str, jd_text: str) -> float:
+    """Calculate ATS compatibility score for a CV against a job description."""
+    prompt = f"""
+    Analyze this CV for ATS (Applicant Tracking System) compatibility.
+    Rate on a scale of 0-100 how well this CV would perform in automated ATS screening systems.
+    
+    Consider:
+    - Keyword matching with job description
+    - CV formatting and structure
+    - Use of industry-standard terms
+    - Absence of unusual formatting or tables
+    - Proper section headings
+    
+    CV: {cv_text[:3000]}...
+    
+    Job Description: {jd_text[:1000]}...
+    
+    Return only a number between 0-100.
+    """
+    
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=10,
+            temperature=0.1
+        )
+        
+        score_text = response.choices[0].message.content.strip()
+        # Extract number from response
+        score_match = re.search(r'\d+', score_text)
+        if score_match:
+            score = float(score_match.group())
+            return min(max(score, 0), 100)  # Ensure 0-100 range
+        
+        return 0.0
+    except Exception as e:
+        print(f"Error calculating ATS score: {str(e)}")
+        return 0.0

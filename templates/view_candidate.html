@@ -37,8 +37,38 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <strong>Applied Date:</strong> {{ candidate.created_at[:10] }}
+                        <strong>ATS Score:</strong>
+                        <div class="progress mt-1">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ candidate.get('ats_score', 0) }}%">
+                                {{ "%.1f"|format(candidate.get('ats_score', 0)) }}%
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Applied Date:</strong> {{ candidate.created_at[:10] }}
+                </div>
+                
+                <div class="resume-preview-container">
+                    <strong>Resume Preview:</strong>
+                    {% if candidate.cv_path %}
+                        {% set preview_url = '/' + candidate.cv_path.replace('\\', '/') %}
+                        {% if preview_url.lower().endswith('.pdf') %}
+                            <embed src="{{ preview_url }}" type="application/pdf" width="100%" height="500px" class="resume-preview-frame"/>
+                            <div class="mt-2">
+                                <a href="{{ preview_url }}" target="_blank" class="btn btn-outline-primary btn-sm">Open in new tab</a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mt-2">
+                                <a href="{{ preview_url }}" target="_blank">Download CV</a>
+                                (Preview not available for this file type)
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning mt-2">No resume uploaded.</div>
+                    {% endif %}
                 </div>
                 
                 <div class="mb-3">
@@ -86,7 +116,7 @@
                     {% elif candidate.status == 'interview_scheduled' %}
                     <span class="btn btn-warning disabled">📞 Interview Scheduled</span>
                     {% endif %}
-                    <a href="{{ candidate.cv_path }}" class="btn btn-outline-primary" target="_blank">📄 View CV</a>
+                    <a href="{{ preview_url if candidate.cv_path else '#' }}" class="btn btn-outline-primary" target="_blank">📄 Download CV</a>
                 </div>
             </div>
         </div>
@@ -101,6 +131,10 @@
                 <div class="mb-2">
                     <small class="text-muted">Match Score</small>
                     <div class="h5 text-primary">{{ "%.1f"|format(candidate.match_score) }}%</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">ATS Score</small>
+                    <div class="h5 text-success">{{ "%.1f"|format(candidate.get('ats_score', 0)) }}%</div>
                 </div>
                 <div class="mb-2">
                     <small class="text-muted">Status</small>
@@ -154,3 +188,5 @@
     </div>
 </div>
 {% endblock %}
+
+  

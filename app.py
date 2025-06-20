@@ -1,12 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, send_from_directory, abort
 import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import openai
 from datetime import datetime
 from data_storage import job_storage, candidate_storage
-from ai_services import analyze_cv, generate_jd, calculate_match_score
-from utils import allowed_file, extract_text_from_pdf
+from ai_services import analyze_cv, generate_jd, calculate_match_score, calculate_ats_score
+from utils import allowed_file, extract_text_from_pdf, get_ats_tips
 from chatbot_ai import rad_chatbot
 import json
 
@@ -46,7 +46,17 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def dashboard():
     active_jobs = job_storage.count_by_status('active')
     pending_candidates = candidate_storage.count_by_status('pending_review')
-    return render_template('dashboard.html', active_jobs=active_jobs, pending_candidates=pending_candidates)
+    # Count shortlisted (status == 'shortlisted' or 'interview_scheduled')
+    candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
+    shortlisted_count = len([c for c in candidates if c.get('status') == 'shortlisted' or c.get('status') == 'interview_scheduled'])
+    in_process_count = len([c for c in candidates if c.get('status') == 'interview_scheduled'])
+    return render_template(
+        'dashboard.html',
+        active_jobs=active_jobs,
+        pending_candidates=pending_candidates,
+        shortlisted_count=shortlisted_count,
+        in_process_count=in_process_count
+    )
 
 @app.route('/jd/create', methods=['GET', 'POST'])
 def create_jd():
@@ -111,6 +121,8 @@ def upload_candidates(jd_id):
                 cv_text = extract_text_from_pdf(filepath)
                 analysis = analyze_cv(cv_text, jd['description'])
                 match_score = calculate_match_score(cv_text, jd['required_skills'])
+                ats_score = calculate_ats_score(cv_text, jd['description'])
+                ats_tips = get_ats_tips(ats_score)
                 
                 # Auto-shortlist based on minimum score
                 min_score = jd.get('min_score', 70)
@@ -127,6 +139,8 @@ def upload_candidates(jd_id):
                     cv_path=filepath,
                     job_id=jd_id,
                     match_score=match_score,
+                    ats_score=ats_score,
+                    ats_tips=ats_tips,
                     ai_analysis=str(analysis),
                     status=status,
                     shortlisted=shortlisted_value,
@@ -224,6 +238,23 @@ def schedule_interview(candidate_id):
     candidate_storage.storage._save_json(candidate_storage.storage.candidates_file, candidates)
     flash('Interview scheduled!', 'success')
     return redirect(url_for('view_candidate', candidate_id=candidate_id))
+
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    # Always serve from the absolute path of the uploads directory
+    uploads_dir = os.path.abspath(app.config['UPLOAD_FOLDER'])
+    # Print debug info to check the actual path and file existence
+    print("Serving file:", filename)
+    print("Uploads dir:", uploads_dir)
+    full_path = os.path.join(uploads_dir, filename)
+    print("Full path:", full_path)
+    if not os.path.isfile(full_path):
+        print("File does not exist!")
+    try:
+        return send_from_directory(uploads_dir, filename)
+    except Exception as e:
+        print("Error serving file:", e)
+        abort(404)
 
 @app.route('/debug/data')
 def debug_data():

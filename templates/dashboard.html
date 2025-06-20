@@ -5,41 +5,41 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-12">
-        <h1 class="display-4">🤖 RAD Recruitment Assistant</h1>
-        <p class="lead">AI-Powered Internal Recruitment Dashboard</p>
+        <h1>RAD Recruitment Assistant</h1>
+        <p class="text-muted">AI-Powered Internal Recruitment Dashboard</p>
     </div>
 </div>
 
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card bg-primary text-white">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Active Jobs</h5>
+                <span class="card-title">Active Jobs</span>
                 <h2 class="card-text">{{ active_jobs }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-warning text-white">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Pending Review</h5>
+                <span class="card-title">Pending Review</span>
                 <h2 class="card-text">{{ pending_candidates }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Shortlisted</h5>
-                <h2 class="card-text">-</h2>
+                <span class="card-title">Shortlisted</span>
+                <h2 class="card-text">{{ shortlisted_count }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-info text-white">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">In Process</h5>
-                <h2 class="card-text">-</h2>
+                <span class="card-title">In Process</span>
+                <h2 class="card-text">{{ in_process_count }}</h2>
             </div>
         </div>
     </div>
@@ -53,13 +53,13 @@
             </div>
             <div class="card-body">
                 <a href="{{ url_for('create_jd') }}" class="btn btn-primary mb-2 d-block">
-                    📝 Create New Job Description
+                    Create New Job Description
                 </a>
                 <a href="{{ url_for('jobs_list') }}" class="btn btn-info mb-2 d-block">
-                    🎯 View All Jobs
+                    View All Jobs
                 </a>
                 <a href="{{ url_for('chatbot') }}" class="btn btn-success mb-2 d-block">
-                    💬 Chat with RAD Bot
+                    Chat with RAD Bot
                 </a>
             </div>
         </div>

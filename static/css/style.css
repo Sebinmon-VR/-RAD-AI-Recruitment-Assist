@@ -1,21 +1,242 @@
 body {
-    background-color: #f8f9fa;
+    background-color: #fff;
+    color: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1rem;
+}
+
+.navbar {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-bottom: 1px solid #eee;
 }
 
 .navbar-brand {
-    font-weight: bold;
+    font-weight: 600;
+    color: #222;
+    font-size: 1.3rem;
 }
 
-main {
-    min-height: 70vh;
+.navbar-light .navbar-nav .nav-link {
+    color: #444;
+    font-weight: 500;
+    margin-right: 1rem;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #111;
+    border-bottom: 2px solid #222;
+    background: none;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    background: #fff;
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    background: #f7f7f9;
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 14px 14px 0 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-footer {
+    background: #f7f7f9;
+    border-top: 1px solid #f0f0f0;
+    border-radius: 0 0 14px 14px;
+}
+
+.btn, .btn-sm, .btn-outline-primary, .btn-primary, .btn-success, .btn-warning, .btn-danger {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.btn-primary, .btn-success, .btn-warning, .btn-danger {
+    background: #222;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+    background: #444;
+    color: #fff;
+}
+
+.btn-outline-primary {
+    background: #fff;
+    color: #222;
+    border: 1.5px solid #222;
+}
+
+.btn-outline-primary:hover {
+    background: #222;
+    color: #fff;
+}
+
+.badge {
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: 500;
+    padding: 0.4em 0.7em;
+}
+
+.progress {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #222 60%, #444 100%);
+    border-radius: 4px;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #eee;
+    background: #fafbfc;
+    font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #222;
+    box-shadow: 0 0 0 0.1rem #2222;
+}
+
+.alert {
+    border-radius: 8px;
+    font-weight: 400;
+}
+
+.bg-light {
+    background: #f7f7f9 !important;
+}
+
+pre {
+    background: #f7f7f9;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.97em;
+    color: #222;
+    border: 1px solid #eee;
+    overflow-x: auto;
+}
+
+.resume-preview-container {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.resume-preview-frame {
+    width: 100%;
+    min-height: 480px;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+    height: 6px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    background-color: #444;
+    border-radius: 3px;
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+}
+
+/* Form controls */
+.form-control {
+    border-color: #e9ecef;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #adb5bd;
+    box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.03);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* Chat styling */
+.chat-message {
+    margin-bottom: 15px;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    max-width: 85%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.bot-message {
+    background-color: #f8f9fa;
+    border-left: 2px solid #e9ecef;
+}
+
+.user-message {
+    background-color: #f8f9fa;
+    border-right: 2px solid #e9ecef;
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+
+/* Borders and dividers */
+.border {
+    border-color: #eaeaea !important;
+}
+
+.border-bottom {
+    border-bottom-color: #eaeaea !important;
+}
+
+/* Utility classes */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 6px;
+    font-weight: normal;
+}
+
+/* Custom spacing */
+.mt-4 {
+    margin-top: 2rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem !important;
 }

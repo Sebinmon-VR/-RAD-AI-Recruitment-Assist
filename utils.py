@@ -16,7 +16,9 @@ def extract_text_from_pdf(filepath):
         with pdfplumber.open(filepath) as pdf:
             text = ""
             for page in pdf.pages:
-                text += page.extract_text() or ""
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
             return text
     except Exception as e:
         # Fallback to PyPDF2
@@ -25,7 +27,7 @@ def extract_text_from_pdf(filepath):
                 pdf_reader = PyPDF2.PdfReader(file)
                 text = ""
                 for page in pdf_reader.pages:
-                    text += page.extract_text()
+                    text += page.extract_text() + "\n"
                 return text
         except Exception as e2:
             return f"Error extracting text: {str(e2)}"
@@ -35,3 +37,14 @@ def ensure_upload_directory():
     upload_dir = 'uploads'
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
+        
+def get_ats_tips(score):
+    """Get ATS improvement tips based on score."""
+    if score >= 90:
+        return "Excellent ATS compatibility. No changes needed."
+    elif score >= 70:
+        return "Good ATS compatibility. Consider adding a few more role-specific keywords."
+    elif score >= 50:
+        return "Average ATS compatibility. Consider using a simpler format and adding more industry standard terms."
+    else:
+        return "Low ATS compatibility. Consider reformatting with simple sections, standard headers, and more keywords."
