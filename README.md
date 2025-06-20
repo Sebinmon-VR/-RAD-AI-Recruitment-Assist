@@ -1,6 +1,6 @@
 # RAD - AI-Powered Recruitment Assistant
 
-An intelligent recruitment chatbot system that automates CV screening, candidate shortlisting, and provides AI-powered insights for hiring decisions.
+An intelligent recruitment platform that automates CV screening, candidate shortlisting, and provides AI-powered insights and real-time tracking for hiring decisions.
 
 ## 🚀 Features
 
@@ -8,9 +8,11 @@ An intelligent recruitment chatbot system that automates CV screening, candidate
 - Create comprehensive JDs using OpenAI GPT
 - Set minimum score thresholds for auto-shortlisting
 - Role-based skill matching
+- Specify number of openings per job
 
 ### 2. Automated CV Analysis & Shortlisting
 - Upload multiple CVs (PDF, DOC, DOCX)
+- Interactive, real-time progress UI for file processing
 - AI extracts candidate information and skills
 - Automatic scoring and shortlisting based on job requirements
 - Match score calculation using AI
@@ -20,16 +22,19 @@ An intelligent recruitment chatbot system that automates CV screening, candidate
 - Natural language queries about candidates and jobs
 - Shortlisted candidate insights and recommendations
 
-### 4. Candidate Management
+### 4. Candidate Management & Real-Time Tracking
 - Detailed candidate profiles with AI analysis
-- Status tracking (Pending → Shortlisted → Interview → Hired)
+- Status tracking (New → In Review → Shortlisted → Interview → Hired/Rejected/Waiting List)
+- Update candidate status directly from their profile
+- Interview scheduling and video recording (browser-based)
+- Offer letter, onboarding, and probation tracking
 - Notes system with timestamps
-- Action buttons for workflow management
 
-### 5. Real-time Dashboard
+### 5. Real-time Dashboard & Tracking
 - Active jobs and candidate statistics
+- Recent activities feed
+- Recruitment pipeline tracking (new, in review, shortlisted, in process, rejected)
 - Quick access to all recruitment functions
-- Job listings with candidate counts
 
 ## 🛠️ Tech Stack
 
@@ -96,11 +101,12 @@ Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 
 ## 🎯 Usage
 
-1. **Create Job Description**: Use AI to generate comprehensive JDs
-2. **Upload CVs**: Bulk upload candidate CVs for analysis
+1. **Create Job Description**: Use AI to generate comprehensive JDs and specify openings
+2. **Upload CVs**: Bulk upload candidate CVs with real-time processing feedback
 3. **Review Candidates**: AI automatically scores and shortlists candidates
 4. **Chat with RAD Bot**: Ask questions about your recruitment data
-5. **Manage Pipeline**: Track candidates through interview stages
+5. **Track Pipeline**: Monitor every stage from application to onboarding and probation
+6. **Manage Candidate Status**: Update status (hired, rejected, waiting list) directly from candidate profile
 
 ## 📊 Data Structure
 
@@ -108,6 +114,7 @@ The system uses file-based storage with JSON files:
 - `data/jobs.json` - Job descriptions and requirements
 - `data/candidates.json` - Candidate profiles and analysis
 - `uploads/` - CV file storage
+- `uploads/interview_videos/` - Interview video recordings
 
 ## 🤖 RAD Bot Commands
 
@@ -117,6 +124,12 @@ Try these queries with the AI chatbot:
 - "Who are the top candidates?"
 - "Give me recruitment insights"
 - "What needs my attention?"
+
+## 📡 Real-Time Tracking
+
+- Live updates for job posting status, candidate progress, interview scheduling, offer and onboarding
+- Interactive dashboard with recruitment pipeline stats
+- AI-powered reminders and alerts for pending actions
 
 ## 🚀 Deployment
 
@@ -138,12 +151,12 @@ RAD-AI-Recruitment-Assist/
 ├── app.py                 # Main Flask application
 ├── data_storage.py        # File-based data management
 ├── ai_services.py         # OpenAI integration
-├── chatbot_ai.py         # AI chatbot functionality
-├── utils.py              # Utility functions
-├── requirements.txt      # Python dependencies
-├── .env.example         # Environment template
-├── .gitignore           # Git ignore rules
-├── templates/           # HTML templates
+├── chatbot_ai.py          # AI chatbot functionality
+├── utils.py               # Utility functions
+├── requirements.txt       # Python dependencies
+├── .env.example           # Environment template
+├── .gitignore             # Git ignore rules
+├── templates/             # HTML templates
 │   ├── base.html
 │   ├── dashboard.html
 │   ├── create_jd.html
@@ -152,12 +165,14 @@ RAD-AI-Recruitment-Assist/
 │   ├── view_candidate.html
 │   ├── upload_candidates.html
 │   └── chatbot.html
-├── static/              # CSS, JS, images
+├── static/                # CSS, JS, images
 │   ├── css/
 │   └── js/
-├── data/                # JSON data files
-├── uploads/             # CV file storage
-└── README.md           # This file
+│   └── img/               # Company logo, etc.
+├── data/                  # JSON data files
+├── uploads/               # CV file storage
+│   └── interview_videos/  # Video recordings
+└── README.md              # This file
 ```
 
 ## 🆘 Support
@@ -172,7 +187,6 @@ For issues and questions:
 
 - Database integration (PostgreSQL/MongoDB)
 - Email notifications
-- Interview scheduling integration
 - Advanced analytics dashboard
 - Multi-tenant support
 - API endpoints for external integrations
@@ -181,21 +195,7 @@ For issues and questions:
 
 **IMPORTANT**: Never commit sensitive information to version control!
 
-### Before pushing to GitHub:
-1. **Check .env file**: Ensure `.env` file is in `.gitignore` and not tracked
-2. **Verify API keys**: Make sure no real API keys are in any tracked files
-3. **Secret key**: Generate a secure secret key for production
+- Ensure `.env` file is in `.gitignore` and not tracked
+- Never share your `.env` file or real API keys
 
-### Generate secure keys:
-```bash
-# Generate a secure secret key
-python -c "import secrets; print(secrets.token_hex(32))"
-
-# Check for accidentally committed secrets
-git log --grep="key\|password\|secret" --oneline
-```
-
-### Environment Setup:
-- Copy `.env.example` to `.env`
-- Add your actual API keys to `.env` (not tracked by git)
-- Never share your `.env` file
+---
