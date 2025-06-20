@@ -28,12 +28,22 @@
         .navbar-nav .nav-link {
             margin-right: 1rem;
         }
+        .footer {
+            box-shadow: 0 -1px 8px rgba(43,58,85,0.04);
+        }
+        .footer a:hover {
+            color: #0d6efd !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">RAD Assistant</a>
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                <img src="{{ url_for('static', filename='images/Screenshot 2025-06-20 153013.png') }}" alt="">
+                
+            </a>
+            
             <div class="navbar-nav">
                 <a class="nav-link{% if request.endpoint == 'dashboard' %} active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
                 <a class="nav-link{% if request.endpoint == 'jobs_list' %} active{% endif %}" href="{{ url_for('jobs_list') }}">Jobs</a>
@@ -41,6 +51,7 @@
                 <a class="nav-link{% if request.endpoint == 'chatbot' %} active{% endif %}" href="{{ url_for('chatbot') }}">RAD Bot</a>
             </div>
         </div>
+        
     </nav>
 
     <main class="container mt-4">
@@ -57,7 +68,21 @@
         
         {% block content %}{% endblock %}
     </main>
-
+    <footer class="footer mt-3 py-3 " style="background: #f8f9fa; border-top: 1px solid #e3e3e3;">
+        <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <div class="d-flex align-items-center mb-2 mb-md-0">
+                <img style="width: 80px; width: 80px; margin-right: 10px;" src="{{ url_for('static', filename='images/Hamdaz Technologies logo .png') }}" alt="Company Logo" style="height:36px; margin-right:12px;">
+                <span class="fw-bold" style="color: rgb(43,58,85); font-size: 1.1rem;">Hamdaz Technologies </span>
+            </div>
+            <div class="text-muted small">
+                <span>Recruitment Assistant Platform &copy; {{ current_year }} | Built for <strong>Rejlers</strong></span>
+                <br>
+                <span>
+                    Need help? <a href="mailto:support@hamdaz.com" style="color:rgb(43,58,85);text-decoration:underline;">Contact Support</a>
+                </span>
+            </div>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

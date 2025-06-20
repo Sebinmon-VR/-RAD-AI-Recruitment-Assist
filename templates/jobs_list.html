@@ -3,6 +3,12 @@
 {% block title %}All Jobs - RAD{% endblock %}
 
 {% block content %}
+<style>
+.page-heading, .section-heading, h1, h2, h3, h4, h5 {
+    color: rgb(43, 58, 85) !important;
+}
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>🎯 All Job Postings</h2>
     <a href="{{ url_for('create_jd') }}" class="btn btn-primary">+ Create New Job</a>

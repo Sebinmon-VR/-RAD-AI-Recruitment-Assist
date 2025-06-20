@@ -13,8 +13,9 @@
     "ats_score": 85.0,
     "ats_tips": "Good ATS compatibility. Consider adding a few more role-specific keywords.",
     "ai_analysis": "{'name': 'Sebinmon V R', 'email': 'sebinmonvr@gmail.com', 'phone': '7306092935', 'skills': ['Artificial Intelligence', 'Python', 'Machine Learning', 'Deep Learning', 'Data Science', 'DBMS'], 'experience_years': 1, 'education': 'B.Tech, Artificial Intelligence And Data Science Engineering from APJ Abdul Kalam Technological University', 'strengths': ['Technical expertise in AI/ML', 'Experience in proposal development', 'Strong communication skills', 'Ability to collaborate with cross-functional teams', 'Experience in managing multiple projects and meeting deadlines'], 'gaps': ['Proficiency in Microsoft Office Suite', 'Knowledge of CRM software', 'Familiarity with the manufacturing industry and its processes'], 'summary': 'Sebinmon V R is an experienced AI/ML professional with a strong background in Python, Flask, and OpenAI. He has proven leadership skills in managing cross-functional teams and overseeing AI initiatives and technical proposal development. He has worked as a Team Lead and AI Engineer at Hamdaz Technologies, where he led AI and proposal engineering teams to deliver intelligent solutions and high-quality technical proposals. He also has experience in developing and deploying AI/ML models for real-world business applications.'}",
-    "status": "interview_scheduled",
-    "interview_video": "interview_videos/interview_1.webm"
+    "status": "hired",
+    "interview_video": "interview_videos/interview_1.webm",
+    "updated_at": "2025-06-20T11:00:33.947130"
   },
   {
     "id": 2,
@@ -111,6 +112,38 @@
     "ats_score": 85.0,
     "ats_tips": "Good ATS compatibility. Consider adding a few more role-specific keywords.",
     "ai_analysis": "{'name': 'John Smith', 'email': 'johnsmith@example.com', 'phone': '+1 123-456-7890', 'skills': ['Python', 'JavaScript', 'Java', 'C++', 'Django', 'React', 'Node.js', 'Spring Boot', 'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Jenkins', 'Terraform', 'PostgreSQL', 'MongoDB', 'MySQL'], 'experience_years': 10, 'education': 'BS in Computer Science, Stanford University, 2013', 'strengths': ['Technical expertise', 'Experience in leading teams', 'Experience in developing scalable web applications', 'Knowledge of CRM software', 'Experience in cloud architecture and DevOps practices'], 'gaps': ['Lack of experience in proposal development', 'Lack of experience in a junior role', 'Lack of experience in a technical sales environment', 'Lack of knowledge about the manufacturing industry and its processes', 'Lack of proficiency in Microsoft Office Suite, particularly Excel and PowerPoint'], 'summary': 'Results-oriented Senior Software Engineer with over 10 years of experience in developing scalable web applications, leading agile teams, and delivering innovative software solutions. Expertise in full-stack development, cloud architecture, and DevOps practices.'}",
+    "status": "shortlisted"
+  },
+  {
+    "id": 8,
+    "created_at": "2025-06-20T11:38:37.923451",
+    "shortlisted": "yes",
+    "notes": "",
+    "name": "Emily Davis",
+    "email": "emilydavis@example.com",
+    "phone": "+1 987-654-3210",
+    "cv_path": "uploads\\Fresher_Resume.pdf",
+    "job_id": 3,
+    "match_score": 85.0,
+    "ats_score": 85.0,
+    "ats_tips": "Good ATS compatibility. Consider adding a few more role-specific keywords.",
+    "ai_analysis": "{'name': 'Emily Davis', 'email': 'emilydavis@example.com', 'phone': '+1 987-654-3210', 'skills': ['Python', 'JavaScript', 'C', 'Git', 'HTML', 'CSS', 'React', 'Flask', 'MySQL'], 'experience_years': 0.5, 'education': 'BTech in Computer Science, University of Illinois, 2024', 'strengths': ['Proficiency in Python', 'Experience with Flask', 'Experience with Git', 'Strong problem-solving skills', 'Excellent communication and teamwork skills', 'Participation in Hackathons'], 'gaps': ['Experience with AI technologies', 'Experience with machine learning frameworks such as TensorFlow or PyTorch', 'Understanding of SDLC and agile methodologies'], 'summary': 'Emily Davis is a motivated Computer Science graduate with a BTech degree from the University of Illinois, graduating in 2024 with a GPA of 3.8. She has strong skills in Python, JavaScript, and C, and has practical experience from an internship as a Software Development Intern. Emily has a solid foundation in software development tools and technologies, including Git, React, and Flask. Her strengths align well with the Junior Software Engineer role, particularly her proficiency in Python and her collaborative mindset. However, she may need to gain experience in AI technologies and machine learning frameworks to fully meet the job requirements.'}",
+    "status": "interview_scheduled"
+  },
+  {
+    "id": 9,
+    "created_at": "2025-06-20T11:38:52.317187",
+    "shortlisted": "yes",
+    "notes": "",
+    "name": "Emily Davis",
+    "email": "emilydavis@example.com",
+    "phone": "+1 987-654-3210",
+    "cv_path": "uploads\\Fresher_Resume.pdf",
+    "job_id": 3,
+    "match_score": 85.0,
+    "ats_score": 85.0,
+    "ats_tips": "Good ATS compatibility. Consider adding a few more role-specific keywords.",
+    "ai_analysis": "{'name': 'Emily Davis', 'email': 'emilydavis@example.com', 'phone': '+1 987-654-3210', 'skills': ['Python', 'JavaScript', 'C', 'Git', 'HTML', 'CSS', 'React', 'Flask', 'MySQL'], 'experience_years': 0.5, 'education': 'BTech in Computer Science, University of Illinois, 2024', 'strengths': ['Proficiency in Python', 'Experience with Flask', 'Git knowledge', 'Strong problem-solving skills', 'Excellent communication and teamwork skills', 'Experience in software development projects'], 'gaps': ['Experience with AI technologies', 'Experience with machine learning frameworks such as TensorFlow or PyTorch', 'Understanding of AI concepts and methodologies'], 'summary': 'Emily Davis is an aspiring software developer with a BTech in Computer Science, graduating in 2024. She has experience as a Software Development Intern, where she improved API performance and built dashboard features using Flask. Her skills include Python, JavaScript, and React, and she has a strong foundation in coding and problem-solving. While she matches many of the job requirements, she lacks direct experience with AI technologies and machine learning frameworks.'}",
     "status": "shortlisted"
   }
 ]

@@ -43,6 +43,10 @@ print(f"Loaded OPENAI_API_KEY from .env: {openai_key[:10]}...")
 # Ensure upload directory exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+@app.context_processor
+def inject_now():
+    return {'current_year': datetime.utcnow().year}
+
 @app.route('/')
 def dashboard():
     active_jobs = job_storage.count_by_status('active')
@@ -50,6 +54,13 @@ def dashboard():
     candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
     shortlisted_count = len([c for c in candidates if c.get('status') == 'shortlisted' or c.get('status') == 'interview_scheduled'])
     in_process_count = len([c for c in candidates if c.get('status') == 'interview_scheduled'])
+
+    # Tracking counts
+    new_applications = len([c for c in candidates if c.get('status') in ['pending_review', 'new', None, '']])
+    in_review = len([c for c in candidates if c.get('status') == 'in_review'])
+    shortlisted = len([c for c in candidates if c.get('status') == 'shortlisted'])
+    in_process = len([c for c in candidates if c.get('status') == 'interview_scheduled'])
+    rejected = len([c for c in candidates if c.get('status') == 'rejected'])
 
     # Collect recent activities from jobs and candidates
     activities = []
@@ -80,13 +91,35 @@ def dashboard():
     )
     recent_activities = activities[:10]
 
+    # Real-time tracking data
+    job_tracking = []
+    for job in jobs:
+        job_id = job.get("id")
+        job_candidates = [c for c in candidates if c.get("job_id") == job_id]
+        job_tracking.append({
+            "id": job_id,
+            "title": job.get("role_title"),
+            "status": job.get("status"),
+            "openings": job.get("openings", 1),
+            "applications": len(job_candidates),
+            "shortlisted": len([c for c in job_candidates if c.get("status") == "shortlisted"]),
+            "interviewed": len([c for c in job_candidates if c.get("status") == "interview_scheduled"]),
+            "hired": len([c for c in job_candidates if c.get("status") == "hired"]),
+        })
+
     return render_template(
         'dashboard.html',
         active_jobs=active_jobs,
         pending_candidates=pending_candidates,
         shortlisted_count=shortlisted_count,
         in_process_count=in_process_count,
-        recent_activities=recent_activities
+        recent_activities=recent_activities,
+        job_tracking=job_tracking,
+        new_applications=new_applications,
+        in_review=in_review,
+        shortlisted=shortlisted,
+        in_process=in_process,
+        rejected=rejected,
     )
 
 @app.route('/jd/create', methods=['GET', 'POST'])
@@ -97,6 +130,7 @@ def create_jd():
         seniority = request.form.get('seniority')
         skills = request.form.get('skills')
         min_score = float(request.form.get('min_score', 70))
+        openings = int(request.form.get('openings', 1))
         
         # Generate JD using AI
         generated_jd = generate_jd(role_title, department, seniority, skills)
@@ -108,6 +142,7 @@ def create_jd():
             required_skills=skills,
             description=generated_jd,
             min_score=min_score,
+            openings=openings,
             status='draft'
         )
         
@@ -351,6 +386,64 @@ def interview_meeting(meeting_id):
     # You can add authentication/authorization here
     return render_template('interview_meeting.html', meeting_id=meeting_id)
 
+@app.route('/jobs/<int:job_id>/update_status/<status>', methods=['POST'])
+def update_job_status(job_id, status):
+    jobs = job_storage.storage._load_json(job_storage.storage.jobs_file)
+    for job in jobs:
+        if job['id'] == job_id:
+            job['status'] = status
+            job['updated_at'] = datetime.utcnow().isoformat()
+            break
+    job_storage.storage._save_json(job_storage.storage.jobs_file, jobs)
+    flash(f"Job status updated to {status.replace('_', ' ').capitalize()}!", "success")
+    return redirect(url_for('dashboard'))
+
+@app.route('/candidates/<int:candidate_id>/update_status/<status>', methods=['POST'])
+def update_candidate_status(candidate_id, status):
+    candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
+    for candidate in candidates:
+        if candidate['id'] == candidate_id:
+            candidate['status'] = status
+            candidate['updated_at'] = datetime.utcnow().isoformat()
+            break
+    candidate_storage.storage._save_json(candidate_storage.storage.candidates_file, candidates)
+    flash(f"Candidate status updated to {status.replace('_', ' ').capitalize()}!", "success")
+    return redirect(url_for('view_candidate', candidate_id=candidate_id))
+
+@app.route('/api/tracking')
+def api_tracking():
+    jobs = job_storage.storage._load_json(job_storage.storage.jobs_file)
+    candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
+    tracking = []
+
+    for job in jobs:
+        job_id = job.get("id")
+        job_candidates = [c for c in candidates if c.get("job_id") == job_id]
+        tracking.append({
+            "job_id": job_id,
+            "job_title": job.get("role_title"),
+            "job_status": job.get("status"),
+            "openings": job.get("openings", 1),
+            "applications": len(job_candidates),
+            "candidates": [
+                {
+                    "id": c.get("id"),
+                    "name": c.get("name"),
+                    "status": c.get("status"),
+                    "interview_scheduled": c.get("status") == "interview_scheduled",
+                    "hired": c.get("status") == "hired",
+                    "rejected": c.get("status") == "rejected",
+                    "waiting_list": c.get("status") == "waiting_list",
+                    "offer_letter": c.get("offer_letter", False),
+                    "offer_accepted": c.get("offer_accepted", False),
+                    "onboarding_complete": c.get("onboarding_complete", False),
+                    "probation_status": c.get("probation_status", "not_started"),
+                    "updated_at": c.get("updated_at", c.get("created_at"))
+                }
+                for c in job_candidates
+            ]
+        })
+    return jsonify({"tracking": tracking})
 
 if __name__ == '__main__':
     app.run(debug=True)

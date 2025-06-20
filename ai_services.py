@@ -35,7 +35,7 @@ def generate_jd(role_title: str, department: str, seniority: str, skills: str) -
     
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1500,
             temperature=0.7
@@ -69,7 +69,7 @@ def analyze_cv(cv_text: str, jd_text: str) -> Dict:
     
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1000,
             temperature=0.3
@@ -108,7 +108,7 @@ def calculate_match_score(cv_text: str, required_skills: str) -> float:
     
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=10,
             temperature=0.1
@@ -153,7 +153,7 @@ def calculate_ats_score(cv_text: str, jd_text: str) -> float:
     
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=10,
             temperature=0.1

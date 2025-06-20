@@ -3,6 +3,11 @@
 {% block title %}{{ candidate.name }} - Candidate Profile{% endblock %}
 
 {% block content %}
+<style>
+.page-heading, .section-heading, h1, h2, h3, h4, h5 {
+    color: rgb(43, 58, 85) !important;
+}
+</style>
 <div class="row">
     <div class="col-md-8">
         <div class="card">
@@ -199,6 +204,19 @@
     {% else %}
         <div class="text-muted">No interview recording found for this candidate.</div>
     {% endif %}
+</div>
+
+<div class="mt-4">
+    <h5>Update Candidate Status</h5>
+    <form method="post" action="{{ url_for('update_candidate_status', candidate_id=candidate.id, status='hired') }}" style="display:inline;">
+        <button type="submit" class="btn btn-success btn-sm">Mark as Hired</button>
+    </form>
+    <form method="post" action="{{ url_for('update_candidate_status', candidate_id=candidate.id, status='rejected') }}" style="display:inline;">
+        <button type="submit" class="btn btn-danger btn-sm">Mark as Rejected</button>
+    </form>
+    <form method="post" action="{{ url_for('update_candidate_status', candidate_id=candidate.id, status='waiting_list') }}" style="display:inline;">
+        <button type="submit" class="btn btn-warning btn-sm">Add to Waiting List</button>
+    </form>
 </div>
 {% endblock %}
     if (dataUrl) {
