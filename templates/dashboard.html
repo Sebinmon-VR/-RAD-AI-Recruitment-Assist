@@ -69,23 +69,26 @@
             <div class="card-header">
                 <h5>📈 Recent Activity</h5>
             </div>
-            <div class="card-body">
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <small class="text-muted">2 hours ago</small>
-                        <p>New JD created for Senior Developer</p>
-                    </div>
-                    <div class="timeline-item">
-                        <small class="text-muted">5 hours ago</small>
-                        <p>3 CVs analyzed and shortlisted</p>
-                    </div>
-                    <div class="timeline-item">
-                        <small class="text-muted">1 day ago</small>
-                        <p>Interview scheduled for UI/UX Designer role</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            <!-- Keep only the card version of Recent Activities -->
+
+    <ul class="list-group list-group-flush">
+        {% if recent_activities %}
+            {% for activity in recent_activities %}
+                <li class="list-group-item">
+                    <span class="badge bg-secondary">{{ activity.type|capitalize }}</span>
+                    {{ activity.desc }}
+                    {% if activity.updated_at %}
+                        <small class="text-muted float-end">{{ activity.updated_at }}</small>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item text-muted">No recent activities.</li>
+        {% endif %}
+    </ul>
 </div>
 {% endblock %}
+        </div>
+    </div>
+
+

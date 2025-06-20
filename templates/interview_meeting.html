@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Video Interview{% endblock %}
+{% block content %}
+<div class="container">
+    <h3>Video Interview Room</h3>
+    <div id="jitsi-container" style="height:600px;width:100%;"></div>
+    <div class="mt-3">
+        <button id="start-record" class="btn btn-danger">Start Recording</button>
+        <button id="stop-record" class="btn btn-secondary" disabled>Stop Recording</button>
+        <a id="download-link" class="btn btn-success d-none" download="interview_recording.webm">Download Recording</a>
+        <span id="recording-status" class="ms-3"></span>
+    </div>
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <script>
+        const domain = "meet.jit.si";
+        const options = {
+            roomName: "{{ meeting_id }}",
+            width: "100%",
+            height: 600,
+            parentNode: document.getElementById('jitsi-container'),
+        };
+        const api = new JitsiMeetExternalAPI(domain, options);
+
+        // Extract candidate_id from meeting_id (assumes format: interview_<candidate_id>_<random>)
+        function extractCandidateId(meetingId) {
+            const parts = meetingId.split('_');
+            return parts.length >= 2 ? parts[1] : null;
+        }
+        const meetingId = "{{ meeting_id }}";
+        const candidateId = extractCandidateId(meetingId);
+
+        // Screen recording logic
+        let mediaRecorder;
+        let recordedChunks = [];
+        const startBtn = document.getElementById('start-record');
+        const stopBtn = document.getElementById('stop-record');
+        const downloadLink = document.getElementById('download-link');
+        const statusSpan = document.getElementById('recording-status');
+
+        startBtn.onclick = async function() {
+            // Use the Screen Capture API to record the Jitsi container
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { displaySurface: "browser" },
+                    audio: true // Will try to capture system audio if allowed
+                });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+                mediaRecorder.ondataavailable = function(e) {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+                mediaRecorder.onstop = function() {
+                    const blob = new Blob(recordedChunks, { type: "video/webm" });
+                    // Upload to server
+                    if (candidateId) {
+                        const formData = new FormData();
+                        formData.append("video", blob, "interview_" + candidateId + ".webm");
+                        formData.append("candidate_id", candidateId);
+                        statusSpan.textContent = "Uploading recording...";
+                        fetch("/api/upload_interview_video", {
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                statusSpan.textContent = "Recording uploaded. Redirecting...";
+                                setTimeout(function() {
+                                    window.location.href = "/candidates/" + candidateId;
+                                }, 1200);
+                            } else {
+                                statusSpan.textContent = "Upload failed: " + (data.error || "Unknown error");
+                            }
+                        })
+                        .catch(e => {
+                            statusSpan.textContent = "Upload failed: " + e;
+                        });
+                    }
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.classList.remove('d-none');
+                };
+                mediaRecorder.start();
+                statusSpan.textContent = "Recording...";
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                downloadLink.classList.add('d-none');
+            } catch (err) {
+                statusSpan.textContent = "Failed to start recording: " + err;
+            }
+        };
+
+        stopBtn.onclick = function() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        };
+    </script>
+</div>
+{% endblock %}
+

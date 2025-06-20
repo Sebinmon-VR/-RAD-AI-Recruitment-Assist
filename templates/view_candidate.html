@@ -118,6 +118,13 @@
                     {% endif %}
                     <a href="{{ preview_url if candidate.cv_path else '#' }}" class="btn btn-outline-primary" target="_blank">📄 Download CV</a>
                 </div>
+                
+                <div class="mb-3">
+                    <strong>Interview Call:</strong>
+                    <a href="{{ url_for('create_interview_link', candidate_id=candidate.id) }}" class="btn btn-primary mt-2">
+                        🎥 Generate Interview Link
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -177,8 +184,34 @@
                         </div>
                     </form>
                 </div>
+
             </div>
+            
         </div>
+        
+<div id="interview-recording-section" class="mt-4 ">
+    <h5>Interview Recording</h5>
+    {% if candidate.interview_video %}
+        <video controls style="max-width:100%; border-radius: 10px;">
+            <source src="{{ url_for('serve_interview_video', filename=candidate.interview_video.split('/')[-1]) }}" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+    {% else %}
+        <div class="text-muted">No interview recording found for this candidate.</div>
+    {% endif %}
+</div>
+{% endblock %}
+    if (dataUrl) {
+        videoElem.src = dataUrl;
+        videoElem.style.display = "block";
+        msgElem.textContent = "";
+    } else {
+        videoElem.style.display = "none";
+        msgElem.textContent = "No interview recording found for this candidate on this device.";
+    }
+});
+</script>
+
     </div>
 </div>
 
@@ -187,6 +220,5 @@
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
 </div>
-{% endblock %}
 
-  
+

@@ -9,6 +9,7 @@ from ai_services import analyze_cv, generate_jd, calculate_match_score, calculat
 from utils import allowed_file, extract_text_from_pdf, get_ats_tips
 from chatbot_ai import rad_chatbot
 import json
+import uuid
 
 # Clear existing environment variables first
 for key in ['FLASK_APP', 'FLASK_ENV', 'SECRET_KEY', 'OPENAI_API_KEY']:
@@ -46,16 +47,46 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def dashboard():
     active_jobs = job_storage.count_by_status('active')
     pending_candidates = candidate_storage.count_by_status('pending_review')
-    # Count shortlisted (status == 'shortlisted' or 'interview_scheduled')
     candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
     shortlisted_count = len([c for c in candidates if c.get('status') == 'shortlisted' or c.get('status') == 'interview_scheduled'])
     in_process_count = len([c for c in candidates if c.get('status') == 'interview_scheduled'])
+
+    # Collect recent activities from jobs and candidates
+    activities = []
+    jobs = job_storage.storage._load_json(job_storage.storage.jobs_file)
+    for job in jobs:
+        activities.append({
+            "type": "job",
+            "id": job.get("id"),
+            "title": job.get("role_title"),
+            "status": job.get("status"),
+            "updated_at": job.get("updated_at", job.get("created_at")),
+            "desc": f"Job '{job.get('role_title')}' ({job.get('status')})"
+        })
+    for c in candidates:
+        activities.append({
+            "type": "candidate",
+            "id": c.get("id"),
+            "name": c.get("name"),
+            "status": c.get("status"),
+            "updated_at": c.get("updated_at", c.get("created_at")),
+            "desc": f"Candidate '{c.get('name')}' ({c.get('status')})"
+        })
+    # Sort by updated_at descending
+    activities = sorted(
+        activities,
+        key=lambda x: x.get("updated_at") or "",
+        reverse=True
+    )
+    recent_activities = activities[:10]
+
     return render_template(
         'dashboard.html',
         active_jobs=active_jobs,
         pending_candidates=pending_candidates,
         shortlisted_count=shortlisted_count,
-        in_process_count=in_process_count
+        in_process_count=in_process_count,
+        recent_activities=recent_activities
     )
 
 @app.route('/jd/create', methods=['GET', 'POST'])
@@ -239,6 +270,47 @@ def schedule_interview(candidate_id):
     flash('Interview scheduled!', 'success')
     return redirect(url_for('view_candidate', candidate_id=candidate_id))
 
+@app.route('/candidates/<int:candidate_id>/create_interview_link')
+def create_interview_link(candidate_id):
+    candidate = candidate_storage.get_by_id(candidate_id)
+    if not candidate:
+        flash('Candidate not found', 'error')
+        return redirect(url_for('dashboard'))
+    # Generate a unique meeting ID (could be stored in candidate data for persistence)
+    meeting_id = f"interview_{candidate_id}_{uuid.uuid4().hex[:8]}"
+    meeting_url = url_for('interview_meeting', meeting_id=meeting_id, _external=True)
+    flash(f"Share this link with the candidate: {meeting_url}", "info")
+    return redirect(url_for('view_candidate', candidate_id=candidate_id))
+
+@app.route('/api/upload_interview_video', methods=['POST'])
+def upload_interview_video():
+    video = request.files.get('video')
+    candidate_id = request.form.get('candidate_id')
+    if not video or not candidate_id:
+        return jsonify({'success': False, 'error': 'Missing video or candidate_id'}), 400
+
+    # Save video to a dedicated folder
+    video_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'interview_videos')
+    os.makedirs(video_folder, exist_ok=True)
+    filename = f"interview_{candidate_id}.webm"
+    filepath = os.path.join(video_folder, filename)
+    video.save(filepath)
+
+    # Update candidate record with video path
+    candidates = candidate_storage.storage._load_json(candidate_storage.storage.candidates_file)
+    for candidate in candidates:
+        if str(candidate['id']) == str(candidate_id):
+            candidate['interview_video'] = f"interview_videos/{filename}"
+            break
+    candidate_storage.storage._save_json(candidate_storage.storage.candidates_file, candidates)
+
+    return jsonify({'success': True, 'filepath': f"interview_videos/{filename}"})
+
+@app.route('/uploads/interview_videos/<filename>')
+def serve_interview_video(filename):
+    video_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'interview_videos')
+    return send_from_directory(video_folder, filename)
+
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     # Always serve from the absolute path of the uploads directory
@@ -273,6 +345,12 @@ def debug_data():
     }
     
     return f"<pre>{json.dumps(debug_info, indent=2, default=str)}</pre>"
+
+@app.route('/interview/<meeting_id>')
+def interview_meeting(meeting_id):
+    # You can add authentication/authorization here
+    return render_template('interview_meeting.html', meeting_id=meeting_id)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
